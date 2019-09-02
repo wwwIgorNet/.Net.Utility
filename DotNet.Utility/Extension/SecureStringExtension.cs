@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace DotNet.Utility
@@ -16,6 +17,17 @@ namespace DotNet.Utility
             return new System.Net.NetworkCredential(string.Empty, secureString).Password;
         }
 #endif
+
+        public static byte[] GetSHA256(this SecureString ss)
+        {
+            using (var pinedByteArray = ss.GetPinnedByteArray())
+            {
+                using (var crypt = new SHA256Managed())
+                {
+                    return crypt.ComputeHash(pinedByteArray.Bytes);
+                }
+            }
+        }
 
         public static bool IsEqualTo(this SecureString s1, SecureString s2)
         {
